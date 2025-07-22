@@ -23,7 +23,7 @@
 创建并激活虚拟环境后，安装依赖：
 
 ```bash
-pip install -r requirements.txt
+pip install -r ./requirements.txt
 ```
 
 ### 运行程序
@@ -37,7 +37,7 @@ cd ./app
 执行命令：
 
 ```bash
-python main.py
+python ./main.py
 ```
 
 然后在浏览器访问 `http://127.0.0.1:7860/` 即可使用。
