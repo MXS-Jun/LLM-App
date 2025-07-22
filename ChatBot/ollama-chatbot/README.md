@@ -18,7 +18,7 @@
 
 ### 配置虚拟环境
 
-本程序基于 Python 3.12 开发，可利用 `conda` 或 `venv` 等工具创建虚拟环境。
+本程序基于 `Python 3.12` 开发，可利用 `conda` 或 `venv` 等工具创建虚拟环境。
 
 创建并激活虚拟环境后，安装依赖：
 
@@ -28,7 +28,13 @@ pip install -r requirements.txt
 
 ### 运行程序
 
-在同一个虚拟环境内，执行命令：
+在同一个虚拟环境内，进入 `app` 文件夹：
+
+```bash
+cd ./app
+```
+
+执行命令：
 
 ```bash
 python main.py
