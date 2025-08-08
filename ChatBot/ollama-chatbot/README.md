@@ -12,9 +12,9 @@
 
 本程序默认使用：
 - API 接口：`http://localhost:11434/api/chat`
-- 模型：`deepseek-r1:8b`
+- 模型：`qwen3:4b-instruct`
 
-> 进入 Web UI 后可自定义 API 接口和模型。
+> 暂未适配思考模型：因为无法渲染<think>标签，所以思考过程不可见
 
 ### 配置虚拟环境
 
@@ -23,20 +23,18 @@
 创建并激活虚拟环境后，安装依赖：
 
 ```bash
-pip install -r ./requirements.txt
+pip install gradio
+pip install json
+pip install requests
+pip install yaml
 ```
 
 ### 运行程序
 
-在同一个虚拟环境内，进入 `app` 文件夹：
+在同一个虚拟环境内，执行命令：
 
 ```bash
-cd ./app
-```
-
-执行命令：
-
-```bash
+cd /the/path/to/ollama-chatbot
 python ./main.py
 ```
 
