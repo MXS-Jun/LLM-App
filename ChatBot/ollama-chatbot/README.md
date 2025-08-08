@@ -4,6 +4,8 @@
 
 利用 Gradio + Ollama 实现的【聊天机器人】Web 应用。
 
+<img width="1507" height="954" alt="image" src="https://github.com/user-attachments/assets/783e7f27-8c8b-4eb2-839b-139499d22a73" />
+
 ## 使用方法
 
 ### 配置 Ollama 服务
