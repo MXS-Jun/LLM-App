@@ -16,7 +16,7 @@
 - API 接口：`http://localhost:11434/api/chat`
 - 模型：`qwen3:4b-instruct`
 
-更多可配置参数，请参考`config.yaml`中的条目。
+更多可配置参数，请参考 `config.yaml` 中的条目。
 
 > 暂未适配思考模型：因为无法渲染<think>标签，所以思考过程不可见
 
