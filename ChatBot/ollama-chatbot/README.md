@@ -16,6 +16,8 @@
 - API 接口：`http://localhost:11434/api/chat`
 - 模型：`qwen3:4b-instruct`
 
+更多可配置参数，请参考`config.yaml`中的条目。
+
 > 暂未适配思考模型：因为无法渲染<think>标签，所以思考过程不可见
 
 ### 配置虚拟环境
@@ -31,7 +33,7 @@ pip install requests
 pip install yaml
 ```
 
-### 运行程序
+### 本地运行程序
 
 在同一个虚拟环境内，执行命令：
 
