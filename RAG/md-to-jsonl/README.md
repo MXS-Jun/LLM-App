@@ -25,16 +25,16 @@ python main.py
 
 ```json
 {
-    "chunk_id": "<chunk_id>",
-    "chunk_content": "<chunk_content>",
-    "metadata": {
-        "chunk_type": "<chunk_type>",
-        "file_name": "<file_name>",
-        "title_level_1": "<title_level_1>",
-        "title_level_2": "<title_level_2>",
-        "...": "...",
-        "title_level_n": "<title_level_n>"
-    }
+  "chunk_id": "<chunk_id>",
+  "chunk_content": "<chunk_content>",
+  "metadata": {
+    "chunk_type": "<chunk_type>",
+    "file_name": "<file_name>",
+    "title_level_1": "<title_level_1>",
+    "title_level_2": "<title_level_2>",
+    "...": "...",
+    "title_level_n": "<title_level_n>"
+  }
 }
 ```
 
@@ -46,7 +46,7 @@ python main.py
 - `<file_name>`：`文件名`；
 - `<title_level_n>`：n 级标题。
 
-> 分块之间使用 `\n\n` 分隔。标题也视作分块，与其他分块之间也使用 `\n\n` 分隔，但是标题只会作为其下的 `text`、`table` 或 `image` 分块的元数据，并不会转化为独立的 `json` 对象。
+> 分块之间使用 `\n\n` 分隔。标题也视作分块，与其他分块之间也使用 `\n\n` 分隔，但是标题只会作为其下的 `text`、`table` 或 `image` 分块的元数据，并不会转化为独立的 `json` 对象。**详情见示例：**`test.md` 和 `test.jsonl`。
 
 ## markdown 规范
 
