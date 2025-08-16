@@ -25,14 +25,15 @@ python main.py
 
 ```json
 {
-    "chunk_id": <chunk_id>,
-    "chunk_content": <chunk_content>,
+    "chunk_id": "<chunk_id>",
+    "chunk_content": "<chunk_content>",
     "metadata": {
-        "chunk_type": <chunk_type>,
-        "file_name": <file_name>,
-        "title_level_1": <title_level_1>,
-        ...
-        "title_level_n": <title_level_n>
+        "chunk_type": "<chunk_type>",
+        "file_name": "<file_name>",
+        "title_level_1": "<title_level_1>",
+        "title_level_2": "<title_level_2>",
+        "...": "...",
+        "title_level_n": "<title_level_n>"
     }
 }
 ```
