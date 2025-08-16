@@ -4,6 +4,8 @@
 
 利用 Gradio + Ollama 实现的【聊天机器人】Web 应用。
 
+<img width="1507" height="954" alt="image" src="https://github.com/user-attachments/assets/783e7f27-8c8b-4eb2-839b-139499d22a73" />
+
 ## 使用方法
 
 ### 配置 Ollama 服务
@@ -13,6 +15,8 @@
 本程序默认使用：
 - API 接口：`http://localhost:11434/api/chat`
 - 模型：`qwen3:4b-instruct`
+
+更多可配置参数，请参考 `config.yaml` 中的条目。
 
 > 暂未适配思考模型：因为无法渲染<think>标签，所以思考过程不可见
 
@@ -29,7 +33,7 @@ pip install requests
 pip install yaml
 ```
 
-### 运行程序
+### 本地运行程序
 
 在同一个虚拟环境内，执行命令：
 
