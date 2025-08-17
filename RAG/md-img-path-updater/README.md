@@ -19,6 +19,8 @@ python main.py
 
 图片文件复制到 `\the\path\to\http-image-server\images\<file_name>`。
 
+详情见测试用例，源文件和目标文件均在仓库中。
+
 > 需要注意的是，本程序需要搭配 `http-image-server` 使用，`http-image-server` 和 `md-img-path-updater` 应在同一级目录中。
 
 ## Markdown 文件夹的结构
