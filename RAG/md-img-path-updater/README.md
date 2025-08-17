@@ -32,10 +32,10 @@ python main.py
     - <file_name>
       - <file_name>.md
       - images
-      - <img_0_name>.png
-      - <img_1_name>.jpeg
-      - ...
-      - <img_n_name>.jpg
+        - <img_0_name>.png
+        - <img_1_name>.jpeg
+        - ...
+        - <img_n_name>.jpg
   - mds
     - <file_name>.md
 
