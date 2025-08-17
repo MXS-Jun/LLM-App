@@ -22,11 +22,12 @@ python main.py
 文件夹的结构：
 
 - http-image-server
-  - <file_name>
-    - <img_0_name>.png
-    - <img_1_name>.jpeg
-    - ...
-    - <img_n_name>.jpg
+  - images
+    - <file_name>
+      - <img_0_name>.png
+      - <img_1_name>.jpeg
+      - ...
+      - <img_n_name>.jpg
 - md-img-path-updater
   - md-folds
     - <file_name>
