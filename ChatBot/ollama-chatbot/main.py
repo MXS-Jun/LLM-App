@@ -1,88 +1,43 @@
 import gradio as gr
-import json
-import requests
 import yaml
 
-
-def load_config(file_path: str):
-    # 打开配置文件，以只读模式读取
-    with open(file_path, "r") as config_file:
-        # 尝试安全地加载 YAML 配置文件
-        try:
-            config = yaml.safe_load(config_file)
-        except yaml.YAMLError:
-            # 如果 YAML 解析失败，打印错误信息
-            print(f"[ERROR] Failed to load configuration file: {config_file}")
-        else:
-            # 如果成功加载配置，返回配置内容
-            return config
+from ollama import Client
+from ollama import Message
 
 
-class LLM:
-    def __init__(self, config: dict):
-        self.config = config
-
-    def generate(self, message: str, history: list):
-        # 设置 API
-        url = self.config["base_url"].rstrip("/") + "/api/chat"
-        # 设置模型
-        model = self.config["model"]
-        # 构造消息
-        system_message = {"role": "system", "content": self.config["system_prompt"]}
-        messages = [system_message]
-        messages.extend(history)
-        messages.append(message)
-        # 构造选项
-        options = {
-            "num_ctx": self.config["parameters"]["num_ctx"],
-            "temperature": self.config["parameters"]["temperature"],
-            "num_predict": self.config["parameters"]["num_predict"],
-            "top_k": self.config["parameters"]["top_k"],
-            "top_p": self.config["parameters"]["top_p"],
-            "min_p": self.config["parameters"]["min_p"],
-        }
-        # 构造请求
-        payload = {
-            "model": model,
-            "stream": True,
-            "messages": messages,
-            "options": options,
-        }
-        # 发送请求
-        response = requests.post(url, json=payload, stream=True)
-        # 处理流式输出
-        for line in response.iter_lines():
-            if line:
-                data = json.loads(line)
-                if "content" in data["message"]:
-                    yield data["message"]["content"]
-                if data["done"]:
-                    break
-
-
-def generate_chat_completion(message: str, history: list):
-    global llm
-    # 将用户输入消息格式化为标准的对话消息结构
-    message = {"role": "user", "content": message}
-    # 将历史对话列表中的每条消息重新格式化为标准结构
-    history = [
-        {"role": message["role"], "content": message["content"]} for message in history
+def chatbot_response(user_content: str, chat_history: list):
+    system_message = Message(role="system", content=config["system_content"])
+    chat_history_messages = [
+        Message(role=message["role"], content=message["content"])
+        for message in chat_history
     ]
-    # 初始化响应字符串，用于拼接流式输出
+    user_message = Message(role="user", content=user_content)
+    messages = [system_message] + chat_history_messages + [user_message]
+
     response = ""
-    # 遍历LLM生成的每一条内容，逐步拼接并返回
-    for completion in llm.generate(message, history):
-        response += completion
+    for part in client.chat(
+        model=config["model"], messages=messages, options=config["options"], stream=True
+    ):
+        response += part["message"]["content"]
         yield response
 
 
 if __name__ == "__main__":
-    config = load_config("config.yaml")
-    llm = LLM(config)
-    demo = gr.ChatInterface(
-        fn=generate_chat_completion,
-        type="messages",
-        save_history=True,
-        title="ChatBot"
-    )
-    demo.launch()
+    with open("./config.yaml", "r") as f:
+        config = yaml.safe_load(f)
+
+    if config:
+        print(f"[INFO]           host = {config["host"]}")
+        print(f"[INFO]          model = {config["model"]}")
+        print(f"[INFO] system_content = {config["system_content"]}")
+        print(f"[INFO]        options = {config["options"]}")
+
+        client = Client(host=config["host"], headers={"x-some-header": "some-value"})
+
+        demo = gr.ChatInterface(
+            fn=chatbot_response,
+            type="messages",
+            title="ChatBot",
+            description="Please enter your question, and I will do my best to answer it.",
+        )
+        demo.launch()
