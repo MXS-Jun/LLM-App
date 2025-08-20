@@ -27,14 +27,14 @@ ollama pull <model>
 
 本程序基于 `Python 3.12` 开发。
 
-安装好 `Python` 后，执行下列命令安装依赖：
+安装 `Python` 后，执行下列命令安装依赖：
 
 ```bash
 pip install gradio
 pip install ollama
 ```
 
-## 本地运行程序
+## 运行程序
 
 执行命令：
 
