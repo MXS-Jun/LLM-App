@@ -1,29 +1,31 @@
 # OpenAI Chatbot
 
-## 介绍
+基于 Gradio 和兼容 OpenAI 接口的大模型云服务平台构建的轻量型聊天机器人 Web 应用。
 
-利用 Gradio + 兼容 OpenAI 接口的云服务（如“硅基流动”）实现的【聊天机器人】Web 应用。
+## 核心特性
 
-## 使用方法
+- 广泛兼容：可使用各种兼容 OpenAI 接口的大模型云服务平台。
+- 快速启动：极简配置，3 分钟内完成部署。
+- Web 界面：基于 Gradio 的直观交互界面，支持上下文对话。
+- 灵活配置：通过配置文件轻松修改应用参数。
 
-### 配置云服务
+## 环境准备
 
-在云服务平台注册账号，申请 API_KEY。
+### 配置云服务（以“硅基流动”为例）
 
-本程序默认使用：
+在[硅基流动官网](https://account.siliconflow.cn/)注册账号，并申请 `api_key`。
 
-- BASE_URL：`https://api.siliconflow.cn/v1`
-- MODEL：`Qwen/Qwen3-8B`
+阅读你想调用的模型的文档，获取 `base_url`、`model` 等参数。
 
-请手动填入 API_KEY 到 `config.yaml` 的指定位置。
+将参数填入 `config.yaml` 的指定位置。
 
-更多配置，请参考 `config.yaml` 中的条目。
+> 请参考 `config.yaml` 中的条目，了解需要设置的参数。
 
-### 配置虚拟环境
+### 安装 Python 及相关依赖
 
 本程序基于 `Python 3.12` 开发。
 
-安装依赖：
+安装好 `Python` 后，执行下列命令安装依赖：
 
 ```bash
 pip install gradio
@@ -41,4 +43,4 @@ python main.py
 
 然后在浏览器访问 `http://127.0.0.1:7860/` 即可使用。
 
-> 暂未适配思考模型：因为无法渲染 `<think>` 标签，所以思考过程不可见
+> 暂未适配思考模型：因为无法渲染 `<think>` 标签，所以思考过程不可见。
