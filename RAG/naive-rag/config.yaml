@@ -1,0 +1,17 @@
+embedder:
+  url: https://api.siliconflow.cn/v1/embeddings
+  api_key: sk-uqpypgnjmfrpowkmhtnezvzkbgedjbozufjchxipirgpeowk
+  model: BAAI/bge-m3
+vector_db:
+    collection_name: my_collection
+generator:
+  host: http://localhost:11434
+  model: llama3.1:8b
+  system_content: You are a helpful assistant.
+  options:
+    num_ctx: 8192
+    temperature: 0.7
+    num_predict: -1
+    top_k: 20
+    top_p: 0.95
+    min_p: 0.05

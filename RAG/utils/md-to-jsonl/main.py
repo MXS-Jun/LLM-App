@@ -74,12 +74,11 @@ def parse_md(md_path: str):
             json_obj["chunk_content"] = chunk_content
             json_obj["metadata"] = {
                 "chunk_type": chunk_type,
-                "titles": [],
             }
 
             for i in range(len(titles)):
                 if titles[i] != "":
-                    json_obj["metadata"]["titles"].append(titles[i])
+                    json_obj["metadata"][f"title_level_{i+1}"] = titles[i]
 
             chunk_summary = ""
             if json_obj["metadata"]["chunk_type"] == "text":
