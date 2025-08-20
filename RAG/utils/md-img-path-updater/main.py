@@ -10,16 +10,16 @@ HOST = "localhost"
 PORT = 8000
 
 
-def extract_img_src(img_tag: str):
+def extract_img_src(text: str):
     img_tag_pattern = r"<img\s+[^>]*src=[\"'](.*?)[\"']"
-    src_match = re.search(img_tag_pattern, img_tag, re.I)
+    src_match = re.search(img_tag_pattern, text, re.I)
     return src_match.group(1) if src_match else None
 
 
-def replace_img_src(img_tag: str, new_src: str):
+def replace_img_src(text: str, new_src: str):
     img_tag_pattern = r"(<img\s+[^>]*src=[\"']).*?([\"'])"
-    new_img_tag = re.sub(img_tag_pattern, rf"\1{new_src}\2", img_tag)
-    return new_img_tag
+    new_text = re.sub(img_tag_pattern, rf"\1{new_src}\2", text)
+    return new_text
 
 
 def is_file_path(src_content: str) -> bool:
