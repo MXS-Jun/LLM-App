@@ -3,6 +3,8 @@
 <img src="https://www.runoob.com/wp-content/uploads/2013/11/python.jpg">
 <center>图 1 Python Logo</center>
 
+Python 是一种高级编程语言，由荷兰程序员 Guido van Rossum 于 1989 年圣诞节期间设计，1991 年正式发布。其设计理念强调代码的可读性和简洁性，采用缩进来定义代码块，摒弃了许多编程语言中繁琐的语法符号（如大括号 {}），使得代码更接近自然语言，易于理解和编写。
+
 ## 1.1 Python 的特点
 
 - 优雅的语法，编写和阅读都很简单；
@@ -49,3 +51,39 @@ Namespaces are one honking great idea -- let's do more of those!
 
 <center>表 1 Python 的发版历史（部分）</center>
 <table><tr><td>发布版本</td><td>发布日期</td></tr><tr><td>Python 3.12.0</td><td>2023 年 10 月 2 日</td></tr><tr><td>Python 3.11.6</td><td>2023 年 10 月 2 日</td></tr><tr><td>Python 3.11.5</td><td>2023 年 8 月 24 日</td></tr><tr><td>Python 3.10.13</td><td>2023 年 8 月 24 日</td></tr><tr><td>Python 3.9.18</td><td>2023 年 8 月 24 日</td></tr></table>
+
+# 4 Python 的应用领域
+
+## 4.1 Web 开发
+
+借助 Django、Flask 等框架搭建网站和后端服务（如 Instagram、Spotify 部分后端使用 Python）。
+
+## 4.2 数据分析与科学计算
+
+Pandas、NumPy、Matplotlib 等库是数据清洗、分析、可视化的核心工具，广泛应用于金融、科研等领域。
+
+## 4.3 人工智能与机器学习
+
+作为 AI 领域的主流语言，TensorFlow、PyTorch、Scikit-learn 等库支持深度学习、图像识别、自然语言处理等任务。
+
+## 4.4 自动化脚本
+
+用于编写批量处理、文件操作、系统运维等自动化工具，简化重复劳动。
+
+## 4.5 教育领域
+
+因语法简洁，常被用作编程入门教学语言，帮助初学者理解编程逻辑。
+
+# 5 Python 的优缺点
+
+## 5.1 优点
+
+可读性强、开发效率高、生态丰富、适用场景广泛。
+
+## 5.2 缺点
+
+作为解释型语言，执行速度相对编译型语言（如 C、Java）较慢；在高性能计算或实时性要求极高的场景中，需结合其他语言优化。
+
+# 6 总结
+
+Python 凭借其 “优雅、明确、简单” 的设计哲学，成为全球最受欢迎的编程语言之一。无论是入门学习、快速开发小型工具，还是构建大型复杂系统，Python 都能提供高效且灵活的解决方案，尤其在数据科学、人工智能等前沿领域占据核心地位。
