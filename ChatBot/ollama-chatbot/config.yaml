@@ -1,5 +1,5 @@
 host: http://localhost:11434
-model: qwen3:4b-instruct
+model: gemma3:12b
 system_content: You are a helpful assistant.
 options:
   num_ctx: 8192
