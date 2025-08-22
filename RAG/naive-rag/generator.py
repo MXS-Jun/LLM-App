@@ -5,7 +5,7 @@ from ollama import Message
 from pathlib import Path
 
 
-CONFIG_YAML_PATH = (Path(__file__).parent / "config.yaml").absolute().as_posix()
+CONFIG_YAML_PATH = Path(__file__).parent / "config.yaml"
 
 
 class Generator:
@@ -33,6 +33,6 @@ class Generator:
             yield part["message"]["content"]
 
 
-with open(CONFIG_YAML_PATH, "r") as f:
-    config = yaml.safe_load(f)
+if CONFIG_YAML_PATH.exists() and CONFIG_YAML_PATH.is_file():
+    config = yaml.safe_load(CONFIG_YAML_PATH.read_text(encoding="utf-8"))
     generator = Generator(config["generator"])
