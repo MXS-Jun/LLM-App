@@ -8,6 +8,7 @@ from embedder import Embedder
 from generator import Generator
 from vector_db import VectorDB
 from retriever import Retriever
+from reranker import Reranker
 
 
 # 加载配置文件
@@ -24,33 +25,43 @@ VECTOR_DB.set_embedder(embedder=EMBEDDER)
 RETRIEVER = Retriever(config=CONFIG["retriever"])
 RETRIEVER.set_embedder(embedder=EMBEDDER)
 RETRIEVER.set_vector_db(vector_db=VECTOR_DB)
+# 实例化重排序器
+RERANKER = Reranker(config=CONFIG["reranker"])
 
 
-def get_retrieved_documents(user_content: str) -> str:
+def get_relevant_documents(user_content: str):
     global RETRIEVER
+    global RERANKER
 
-    context = RETRIEVER.query(text_list=[user_content])
-    context = context[0]
+    retrieved_documents = RETRIEVER.query(text_list=[user_content])
+    retrieved_documents = retrieved_documents[0]
 
-    retrieved_documents = ""
-    if context is not None:
-        retrieved_documents = "\n\n---\n\n".join(
-            [f"### 文档 {idx+1}\n\n{doc.strip()}" for idx, doc in enumerate(context)]
+    reranked_documents = RERANKER.rerank(
+        query=user_content, documents=retrieved_documents
+    )
+
+    relevant_documents = ""
+    if reranked_documents is not None:
+        relevant_documents = "\n\n---\n\n".join(
+            [
+                f"### 文档 {idx+1}\n\n{doc.strip()}"
+                for idx, doc in enumerate(reranked_documents)
+            ]
         )
 
-    return retrieved_documents
+    return relevant_documents
 
 
 def chatbot_response(user_content: str, chat_history: List):
     global GENERATOR
 
-    retrieved_documents = get_retrieved_documents(user_content)
+    relevant_documents = get_relevant_documents(user_content)
     user_question = user_content
 
     prompt_template = textwrap.dedent(
         """
         已知以下文档片段是与问题相关的参考信息：
-        {retrieved_documents}
+        {relevant_documents}
 
         请基于上述文档内容，回答以下问题：{user_question}
 
@@ -62,7 +73,7 @@ def chatbot_response(user_content: str, chat_history: List):
         """
     )
     prompt = prompt_template.format(
-        retrieved_documents=retrieved_documents, user_question=user_question
+        relevant_documents=relevant_documents, user_question=user_question
     )
 
     response = ""
@@ -70,7 +81,7 @@ def chatbot_response(user_content: str, chat_history: List):
         response += content
         yield response, None
 
-    yield response, retrieved_documents
+    yield response, relevant_documents
 
 
 def update_collection() -> None:
@@ -83,7 +94,7 @@ def update_collection() -> None:
 
 
 if __name__ == "__main__":
-    with gr.Blocks(title="Naive RAG") as demo:
+    with gr.Blocks(title="Retrieve and Rerank") as demo:
         with gr.Tab("ChatBot"):
             with gr.Sidebar():
                 ref_docs = gr.Markdown()
@@ -91,7 +102,7 @@ if __name__ == "__main__":
             chat_iface = gr.ChatInterface(
                 fn=chatbot_response,
                 type="messages",
-                title="Naive RAG",
+                title="Retrieve and Rerank",
                 description="Please enter your question, and I will do my best to answer it.",
                 additional_outputs=[ref_docs],
             )
