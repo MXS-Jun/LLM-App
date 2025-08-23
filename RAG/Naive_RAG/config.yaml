@@ -16,4 +16,4 @@ generator:
 retriever:
   n_results: 5
 vector_db:
-    collection_name: my_collection
+    collection_name: test

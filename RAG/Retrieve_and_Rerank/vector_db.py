@@ -1,6 +1,5 @@
 import chromadb
 import json
-import yaml
 
 from embedder import Embedder
 from pathlib import Path
@@ -39,19 +38,19 @@ class VectorDB:
 
         datas = {"ids": [], "embeddings": [], "documents": [], "metadatas": []}
         for json_obj in json_obj_list:
-            datas["ids"].append(json_obj["chunk_id"])
-            datas["documents"].append(json_obj["chunk_content"])
+            datas["ids"].append(json_obj["id"])
+            datas["documents"].append(json_obj["document"])
             datas["metadatas"].append(json_obj["metadata"])
         for start in range(0, len(json_obj_list), batch_size):
             end = min(start + batch_size, len(json_obj_list))
             text_list = []
             for json_obj in json_obj_list[start:end]:
-                if json_obj["metadata"]["chunk_type"] == "text":
-                    text_list.append(json_obj["chunk_content"])
-                elif json_obj["metadata"]["chunk_type"] == "table":
-                    text_list.append(json_obj["metadata"]["chunk_summary"])
-                elif json_obj["metadata"]["chunk_type"] == "image":
-                    text_list.append(json_obj["metadata"]["chunk_summary"])
+                if json_obj["metadata"]["document_type"] == "text":
+                    text_list.append(json_obj["document"])
+                elif json_obj["metadata"]["document_type"] == "table":
+                    text_list.append(json_obj["metadata"]["document_summary"])
+                elif json_obj["metadata"]["document_type"] == "image":
+                    text_list.append(json_obj["metadata"]["document_summary"])
             datas["embeddings"] += self.embedder.embed(text_list)
 
         self.collection.add(

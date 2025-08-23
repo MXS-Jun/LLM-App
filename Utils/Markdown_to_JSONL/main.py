@@ -8,6 +8,7 @@ from ollama import Client
 from pathlib import Path
 
 
+CONFIG_YAML = Path(__file__).parent / "config.yaml"
 MD_DIR = Path(__file__).parent / "mds"
 JSONL_DIR = Path(__file__).parent / "jsonls"
 
@@ -26,81 +27,81 @@ def parse_md(md_path: str):
         raise ValueError(f"[ERROR] read md file failed: {e}")
 
     cnt = 0
-    file_id = md_file.name
-    titles = ["", "", "", "", "", "", "", ""]
+    file_name = md_file.name
+    headers = ["", "", "", "", "", "", "", ""]
     json_obj_list = []
-    chunk_content_list = [
-        chunk_content.strip() for chunk_content in md_content.split("\n\n")
-    ]
+    document_list = [document.strip() for document in md_content.split("\n\n")]
 
-    for chunk_content in chunk_content_list:
-        if chunk_content.startswith("# "):
-            titles = ["", "", "", "", "", ""]
-            titles[0] = chunk_content[2:]
-        elif chunk_content.startswith("## "):
-            titles = titles[:1] + ["", "", "", "", ""]
-            titles[1] = chunk_content[3:]
-        elif chunk_content.startswith("### "):
-            titles = titles[:2] + ["", "", "", ""]
-            titles[2] = chunk_content[4:]
-        elif chunk_content.startswith("#### "):
-            titles = titles[:3] + ["", "", ""]
-            titles[3] = chunk_content[5:]
-        elif chunk_content.startswith("##### "):
-            titles = titles[:4] + ["", ""]
-            titles[4] = chunk_content[6:]
-        elif chunk_content.startswith("###### "):
-            titles = titles[:5] + [""]
-            titles[5] = chunk_content[7:]
-        elif chunk_content.startswith("####### "):
-            titles = titles[:6] + [""]
-            titles[6] = chunk_content[8:]
-        elif chunk_content.startswith("######## "):
-            titles = titles[:7] + [""]
-            titles[7] = chunk_content[9:]
+    for document in document_list:
+        if document.startswith("# "):
+            headers = ["", "", "", "", "", ""]
+            headers[0] = document[2:]
+        elif document.startswith("## "):
+            headers = headers[:1] + ["", "", "", "", ""]
+            headers[1] = document[3:]
+        elif document.startswith("### "):
+            headers = headers[:2] + ["", "", "", ""]
+            headers[2] = document[4:]
+        elif document.startswith("#### "):
+            headers = headers[:3] + ["", "", ""]
+            headers[3] = document[5:]
+        elif document.startswith("##### "):
+            headers = headers[:4] + ["", ""]
+            headers[4] = document[6:]
+        elif document.startswith("###### "):
+            headers = headers[:5] + [""]
+            headers[5] = document[7:]
+        elif document.startswith("####### "):
+            headers = headers[:6] + [""]
+            headers[6] = document[8:]
+        elif document.startswith("######## "):
+            headers = headers[:7] + [""]
+            headers[7] = document[9:]
         else:
             cnt += 1
-            chunk_id = file_id + "_" + str(cnt)
+            id = file_name + "_" + str(cnt)
 
-            if chunk_content.find("</table>") != -1:
-                chunk_type = "table"
-            elif chunk_content.find("<img src=") != -1:
-                chunk_type = "image"
+            if document.find("</table>") != -1:
+                document_type = "table"
+            elif document.find("<img src=") != -1:
+                document_type = "image"
             else:
-                chunk_type = "text"
+                document_type = "text"
 
             json_obj = {}
-            json_obj["chunk_id"] = chunk_id
-            json_obj["chunk_content"] = chunk_content
+            json_obj["id"] = id
+            json_obj["document"] = document
             json_obj["metadata"] = {
-                "chunk_type": chunk_type,
+                "document_type": document_type,
             }
 
-            for i in range(len(titles)):
-                if titles[i] != "":
-                    json_obj["metadata"][f"title_level_{i+1}"] = titles[i]
+            for i in range(len(headers)):
+                if headers[i] != "":
+                    json_obj["metadata"][f"header_{i+1}"] = headers[i]
 
-            chunk_summary = ""
-            if json_obj["metadata"]["chunk_type"] == "text":
-                chunk_summary = summarizer.summarize_text(text=chunk_content)
-            elif json_obj["metadata"]["chunk_type"] == "table":
-                chunk_summary = summarizer.summarize_table(table=chunk_content)
-            elif json_obj["metadata"]["chunk_type"] == "image":
-                img_url = extract_img_src(text=chunk_content)
+            document_summary = ""
+            if json_obj["metadata"]["document_type"] == "text":
+                document_summary = summarizer.summarize_text(text=document)
+            elif json_obj["metadata"]["document_type"] == "table":
+                document_summary = summarizer.summarize_table(table=document)
+            elif json_obj["metadata"]["document_type"] == "image":
+                img_url = extract_img_src(text=document)
                 if img_url is not None:
-                    chunk_summary = summarizer.summarize_image(
-                        img_url=img_url, context=chunk_content
+                    document_summary = summarizer.summarize_image(
+                        img_url=img_url, context=document
                     )
-            json_obj["metadata"]["chunk_summary"] = chunk_summary
+            json_obj["metadata"]["document_summary"] = document_summary
 
             json_obj_list.append(json_obj)
 
-    chunk_summary_list = []
+    document_summary_list = []
     for json_obj in json_obj_list:
-        chunk_summary_list.append(json_obj["metadata"]["chunk_summary"])
-    file_summary = summarizer.summarize_document(chunk_summary_list=chunk_summary_list)
+        document_summary_list.append(json_obj["metadata"]["document_summary"])
+    file_summary = summarizer.summarize_document(
+        document_summary_list=document_summary_list
+    )
     for json_obj in json_obj_list:
-        json_obj["metadata"]["file_id"] = file_id
+        json_obj["metadata"]["file_name"] = file_name
         json_obj["metadata"]["file_summary"] = file_summary
 
     return json_obj_list
@@ -188,7 +189,7 @@ class Summarizer:
             summary = ""
         return summary
 
-    def summarize_document(self, chunk_summary_list):
+    def summarize_document(self, document_summary_list):
         prompt_template = textwrap.dedent(
             """
             请将以下多个摘要内容合并成一段连贯的总体摘要。
@@ -208,8 +209,8 @@ class Summarizer:
             """
         )
         chunk_summaries = ""
-        for i in range(len(chunk_summary_list)):
-            chunk_summaries += f"{i+1}. {chunk_summary_list[i]}\n"
+        for i in range(len(document_summary_list)):
+            chunk_summaries += f"{i+1}. {document_summary_list[i]}\n"
         prompt = prompt_template.format(chunk_summaries=chunk_summaries)
         summary = self.client.generate(
             model=self.config["model"], prompt=prompt, options=self.config["options"]
@@ -225,9 +226,9 @@ def save_jsonl(json_obj_list: list, jsonl_path: str):
 
 
 if __name__ == "__main__":
-    with open("./config.yaml", "r") as f:
-        config = yaml.safe_load(f)
-        summarizer = Summarizer(config)
+    config = yaml.safe_load(CONFIG_YAML.read_text())
+    summarizer = Summarizer(config)
+
     for md in MD_DIR.glob("*.md"):
         if md.is_file():
             json_obj_list = parse_md(md.absolute().as_posix())
