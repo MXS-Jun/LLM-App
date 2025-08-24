@@ -62,8 +62,7 @@ vector_db:
 
 > `embedder` 只适配了硅基流动的 API。`generator` 只适配了 Ollama 的 API。
 
-请在![硅基流动](https://cloud.siliconflow.cn)生成 `api_key`，然后填入 `config.yaml` 的指定位置。
-
+请在<a href="https://cloud.siliconflow.cn">硅基流动</a>生成 `api_key`，然后填入 `config.yaml` 的指定位置。
 
 ## 2.2 运行程序
 
