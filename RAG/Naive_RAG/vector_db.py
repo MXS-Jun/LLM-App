@@ -5,15 +5,14 @@ from embedder import Embedder
 from pathlib import Path
 
 
-CONFIG_YAML_PATH = Path(__file__).parent / "config.yaml"
-JSONLS_PATH = Path(__file__).parent / "jsonls"
-COLLECTION_PATH = Path(__file__).parent / "collection"
+JSONLS = Path(__file__).parent / "jsonls"
+COLLECTION = Path(__file__).parent / "collection"
 
 
 class VectorDB:
     def __init__(self, config):
         self.config = config
-        self.client = chromadb.PersistentClient(path=COLLECTION_PATH.as_posix())
+        self.client = chromadb.PersistentClient(path=COLLECTION.as_posix())
         self.collection = self.client.get_or_create_collection(
             name=self.config["collection_name"]
         )
@@ -23,9 +22,9 @@ class VectorDB:
 
     def update_collection(self, batch_size=16):
         json_obj_list = []
-        for jsonl_path in JSONLS_PATH.rglob("*.jsonl"):
-            if jsonl_path.is_file():
-                jsonl_data = jsonl_path.read_text(encoding="utf-8")
+        for jsonl in JSONLS.rglob("*.jsonl"):
+            if jsonl.is_file():
+                jsonl_data = jsonl.read_text(encoding="utf-8")
                 for line in jsonl_data.splitlines():
                     json_obj = json.loads(line)
                     json_obj_list.append(json_obj)
