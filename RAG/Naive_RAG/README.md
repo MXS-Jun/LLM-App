@@ -2,8 +2,7 @@
 
 Naive RAG 的简单实现。
 
-<img src="naive-rag-arch.png">
-<center>图 1 Naive RAG 架构图</center>
+<div align="center"><img src="naive-rag-arch.png">图 1 Naive RAG 架构图</div>
 
 # 2 使用指南
 
@@ -15,7 +14,7 @@ Naive RAG 的简单实现。
 curl -fsSL https://ollama.com/install.sh | sh
 ```
 
-> 上述命令仅适配 Linux 发行版，其他系统请在 ![Ollama 的发布页](https://github.com/ollama/ollama/releases) 下载合适的版本的安装包来安装。
+> 上述命令仅适配 Linux 发行版，其他系统请在 <a href="https://github.com/ollama/ollama/releases">Ollama 发布页</a> 下载合适的版本的安装包来安装。
 
 确认 Ollama 服务已经在后台运行后，请拉取你想使用的模型，本项目开发时使用的是 `gemma3:12b`。
 
