@@ -2,7 +2,7 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
 import shutil
 
-IMAGE_DIR = Path(__file__).parent / "images"
+IMAGES = Path(__file__).parent / "images"
 MIME_TYPES = {
     ".png": "image/png",
     ".jpg": "image/jpeg",
@@ -23,7 +23,7 @@ class ImageRequestHandler(BaseHTTPRequestHandler):
         if not file_name:
             return self._send_error(400, "Missing file name")
 
-        image_path = IMAGE_DIR / file_name
+        image_path = IMAGES / file_name
         if not self._is_valid_path(image_path):
             return self._send_error(404, "Invalid path")
 
@@ -42,9 +42,9 @@ class ImageRequestHandler(BaseHTTPRequestHandler):
     def _is_valid_path(self, path):
         """防止路径遍历攻击的安全检查"""
         try:
-            # 规范化路径并检查是否在IMAGE_DIR内
+            # 规范化路径并检查是否在 images 内
             resolved = path.resolve()
-            return resolved.is_relative_to(IMAGE_DIR.resolve())
+            return resolved.is_relative_to(IMAGES.resolve())
         except (ValueError, RuntimeError):
             return False
 
@@ -77,7 +77,7 @@ if __name__ == "__main__":
     port = 8000
     server = HTTPServer((host, port), ImageRequestHandler)
     print(f"[INFO] Server started at http://{host}:{port}")
-    print(f"[INFO] Serving images from: {IMAGE_DIR.resolve()}")
+    print(f"[INFO] Serving images from: {IMAGES.resolve()}")
 
     try:
         server.serve_forever()
