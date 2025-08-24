@@ -3,9 +3,9 @@ import re
 import shutil
 
 
-SERVER_IMAGES_DIR = Path(__file__).parent.parent / "http-image-server" / "images"
-MD_FOLD_DIR = Path(__file__).parent / "md-folds"
-MD_DIR = Path(__file__).parent / "mds"
+SERVER_IMAGES = Path(__file__).parent.parent / "HTTP_Image_Server" / "images"
+MD_FOLDS = Path(__file__).parent / "md-folds"
+MDS = Path(__file__).parent / "mds"
 HOST = "localhost"
 PORT = 8000
 
@@ -53,7 +53,7 @@ def update_md_img_path(md_path: str):
                 img_name = Path(src_content).name
                 md_fold_name = md_file.parent.name
                 img_path = (md_file.parent / "images" / img_name).absolute().as_posix()
-                dst_path = (SERVER_IMAGES_DIR / md_fold_name).absolute().as_posix()
+                dst_path = (SERVER_IMAGES / md_fold_name).absolute().as_posix()
                 copy_img_to_server(img_path, dst_path)
                 new_img_tag = replace_img_src(
                     line, f"http://{HOST}:{PORT}/images/{md_fold_name}/{img_name}"
@@ -66,11 +66,11 @@ def update_md_img_path(md_path: str):
 
 
 if __name__ == "__main__":
-    for md_fold in MD_FOLD_DIR.iterdir():
+    for md_fold in MD_FOLDS.iterdir():
         for md_file in md_fold.glob("*.md"):
             new_content = update_md_img_path(md_file.absolute().as_posix())
             md_name = md_file.name
-            new_md_file = MD_DIR / md_name
+            new_md_file = MDS / md_name
             new_md_file.parent.mkdir(parents=True, exist_ok=True)
             new_md_file.write_text(new_content, encoding="utf-8")
             print(f"[INFO] updated '{md_name}'")
