@@ -6,11 +6,11 @@
 
 ![chat](chat.png)
 
-<center>图 1 Chat UI</center>
+<p align="center">图 1 Chat UI</p>
 
 ![settings](settings.png)
 
-<center>图 2 Settings UI</center>
+<p align="center">图 2 Settings UI</p>
 
 ## 📦 功能特性
 
