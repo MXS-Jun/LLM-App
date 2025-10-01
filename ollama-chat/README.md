@@ -4,7 +4,9 @@
 
 > 💡 本项目旨在提供一个开箱即用、易于部署和定制的本地 LLM 聊天客户端。
 
----
+![chat](chat.png)
+
+![settings](settings.png)
 
 ## 📦 功能特性
 
@@ -17,8 +19,6 @@
   - 控制生成温度（`temperature`）
 - ✅ **多会话隔离**：每个浏览器会话拥有独立的对话状态
 - ✅ **美观简洁的 UI**：基于 Gradio 构建，支持深色/浅色主题
-
----
 
 ## 🛠️ 快速开始
 
@@ -68,8 +68,6 @@ Running on local URL:  http://127.0.0.1:7860
 
 打开浏览器访问 `http://127.0.0.1:7860` 即可开始聊天！
 
----
-
 ## ⚙️ 自定义系统提示词
 
 系统提示词定义在 `system_prompt.md` 中，用于指导模型行为。默认内容如下：
@@ -90,8 +88,6 @@ If it is necessary to answer user questions step by step, present the steps in a
 
 你可以在 **Settings** 标签页中实时修改提示词，或直接编辑该文件后重启应用。
 
----
-
 ## 📁 项目结构
 
 ```
@@ -104,15 +100,11 @@ ollama-chat/
 └── README.md             # 本说明文件
 ```
 
----
-
 ## 🔒 注意事项
 
 - 本项目**不包含模型本身**，需提前通过 `ollama pull <model>` 下载模型（如 `qwen3:4b-instruct`）。
 - 确保 Ollama 服务正在运行且可通过配置的 `ip:port` 访问。
 - 若修改 `config.yaml` 中的模型名，请确认该模型已安装。
-
----
 
 ## 🧩 依赖说明
 
@@ -120,13 +112,9 @@ ollama-chat/
 - [`gradio`](https://gradio.app/)：快速构建机器学习/Web UI
 - [`pyyaml`](https://pyyaml.org/)：解析 YAML 配置文件
 
----
-
 ## 📄 许可证
 
 本项目采用 [MIT License](LICENSE)（如有），欢迎自由使用、修改与分发。
-
----
 
 ## 🙌 致谢
 
