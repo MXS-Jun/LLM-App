@@ -118,7 +118,7 @@ ollama-chat/
 
 ## 📄 许可证
 
-本项目采用 [MIT License](LICENSE)，欢迎自由使用、修改与分发。
+本项目采用 [MIT License](../LICENSE)，欢迎自由使用、修改与分发。
 
 ## 🙌 致谢
 
