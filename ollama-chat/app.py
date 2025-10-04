@@ -413,7 +413,7 @@ def chat_stream(
                     "<details>\n"
                     + "<summary>Thinking</summary>\n"
                     + thinking_process
-                    + "\n</details>\n\n"
+                    + "\n<hr>\n</details>\n\n"
                 )
 
             if answer_word:
