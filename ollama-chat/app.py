@@ -411,7 +411,7 @@ def chat_stream(
                 # 将思考过程包括在 <details> 标签内
                 history[-1]["content"] = (
                     "<details>\n"
-                    + "<summary>Thinking process</summary>\n"
+                    + "<summary>Thinking</summary>\n"
                     + thinking_process
                     + "\n</details>\n\n"
                 )
@@ -522,11 +522,16 @@ def reset_settings(
     :returns: ("", 默认上下文窗口大小, 默认温度, 重置的记忆模块, 重置的非思考模型, 重置的思考模型)
     :rtype: tuple[str, int, float, Memory, OllamaLLM, OllamaLLM]
     """
+    # 重置记忆模块
     memory.set_system_prompt(DEFAULT_SYSTEM_PROMPT)
+
+    # 重置非思考模型
     instruct_ollama_llm.set_num_ctx(DEFAULT_CONFIG["model"]["options"]["num_ctx"])
     instruct_ollama_llm.set_temperature(
         DEFAULT_CONFIG["model"]["options"]["temperature"]
     )
+
+    # 重置思考模型
     thinking_ollama_llm.set_num_ctx(DEFAULT_CONFIG["model"]["options"]["num_ctx"])
     thinking_ollama_llm.set_temperature(
         DEFAULT_CONFIG["model"]["options"]["temperature"]
@@ -562,7 +567,7 @@ with gr.Blocks(title="Ollama Chat", css=CSS) as demo:
         chat_history_windows: gr.Chatbot = gr.Chatbot(type="messages", show_label=False)
 
         input_textbox: gr.Textbox = gr.Textbox(
-            label="Input field", lines=5, max_lines=10
+            label="Input Field", lines=5, max_lines=10
         )
 
         with gr.Row():
