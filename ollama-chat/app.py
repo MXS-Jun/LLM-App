@@ -391,17 +391,16 @@ def chat_stream(
     messages: list[dict[str, str]] = [memory.get_system_prompt()] + context
 
     if not think:
-
         for _, answer_word in instruct_ollama_llm.chat(messages, False):
             history[-1]["content"] += answer_word
 
             yield (history, memory, instruct_ollama_llm, thinking_ollama_llm)
 
+        # 没有思考过程，所以 AI 消息和 AI 响应相同
         memory.add_ai_message(history[-1]["content"])
         memory.add_ai_response(history[-1]["content"])
 
         yield (history, memory, instruct_ollama_llm, thinking_ollama_llm)
-
     else:
         thinking_process: str = ""
 
