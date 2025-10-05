@@ -1,3 +1,4 @@
+import datetime
 import gradio as gr
 import ollama
 import re
@@ -65,7 +66,7 @@ def create_memory() -> Memory:
     :rtype: Memory
     """
     memory: Memory = Memory()
-    memory.set_system_prompt(DEFAULT_SYSTEM_PROMPT)
+    memory.set_system_message(DEFAULT_SYSTEM_PROMPT)
 
     return memory
 
@@ -106,6 +107,20 @@ def create_thinking_ollama_llm() -> OllamaLLM:
     return thinking_ollama_llm
 
 
+def get_current_time_context() -> str:
+    """获取当前时间的上下文信息
+
+    :returns: 当前时间的上下文信息字符串，包括日期（精确到日）、时间（精确到秒）、星期和周数
+    :rtype: str
+    """
+    now = datetime.datetime.now()
+
+    return (
+        f"Current date and time: {now.strftime('%Y-%m-%d %H:%M:%S')} "
+        f"({now.strftime('%A')}, Week {now.strftime('%U')})."
+    )
+
+
 def chat_stream(
     message: str,
     think: bool,
@@ -131,10 +146,12 @@ def chat_stream(
     :rtype: Iterator[tuple[list[dict[str, str]], Memory, OllamaLLM, OllamaLLM]]
     """
     memory.add_user_message(message)
-
+    # 往系统提示词注入时间的上下文信息
+    system_prompt: str = memory.get_system_message()["content"]
+    system_prompt = f"{get_current_time_context()}\n\n" + system_prompt
+    memory.set_system_message(system_prompt)
     # 根据对话历史列表更新 gradio.Chatbot 组件
     history: list[dict[str, str]] = memory.get_history()
-
     # 根据上下文窗口限制下获取的消息列表生成 AI 响应
     context: list[dict[str, str]] = memory.get_context(
         instruct_ollama_llm.get_num_ctx()
@@ -144,7 +161,7 @@ def chat_stream(
 
     history.append({"role": "assistant", "content": ""})
 
-    messages: list[dict[str, str]] = [memory.get_system_prompt()] + context
+    messages: list[dict[str, str]] = [memory.get_system_message()] + context
 
     if not think:
         for _, answer_word in instruct_ollama_llm.chat(messages, False):
@@ -153,8 +170,8 @@ def chat_stream(
             yield (history, memory, instruct_ollama_llm, thinking_ollama_llm)
 
         # 没有思考过程，所以 AI 消息和 AI 响应相同
-        memory.add_ai_message(history[-1]["content"])
-        memory.add_ai_response(history[-1]["content"])
+        memory.add_assistant_message(history[-1]["content"])
+        memory.add_assistant_response(history[-1]["content"])
 
         yield (history, memory, instruct_ollama_llm, thinking_ollama_llm)
     else:
@@ -163,7 +180,6 @@ def chat_stream(
         for think_word, answer_word in thinking_ollama_llm.chat(messages, True):
             if think_word:
                 thinking_process += think_word
-
                 # 将思考过程包括在 <details> 标签内
                 history[-1]["content"] = (
                     "<details>\n"
@@ -178,7 +194,7 @@ def chat_stream(
             yield (history, memory, instruct_ollama_llm, thinking_ollama_llm)
 
         # AI 消息不包括思考过程
-        memory.add_ai_message(
+        memory.add_assistant_message(
             re.sub(
                 r"<details[^>]*>.*?</details>",
                 "",
@@ -187,9 +203,8 @@ def chat_stream(
                 flags=re.DOTALL,
             )
         )
-
         # AI 响应包括思考过程
-        memory.add_ai_response(history[-1]["content"])
+        memory.add_assistant_response(history[-1]["content"])
 
         yield (history, memory, instruct_ollama_llm, thinking_ollama_llm)
 
@@ -249,7 +264,7 @@ def save_settings(
     if not system_prompt.strip():
         system_prompt = DEFAULT_SYSTEM_PROMPT
 
-    memory.set_system_prompt(system_prompt)
+    memory.set_system_message(system_prompt)
     instruct_ollama_llm.set_num_ctx(num_ctx)
     instruct_ollama_llm.set_temperature(temperature)
     thinking_ollama_llm.set_num_ctx(num_ctx)
@@ -279,14 +294,12 @@ def reset_settings(
     :rtype: tuple[str, int, float, Memory, OllamaLLM, OllamaLLM]
     """
     # 重置记忆模块
-    memory.set_system_prompt(DEFAULT_SYSTEM_PROMPT)
-
+    memory.set_system_message(DEFAULT_SYSTEM_PROMPT)
     # 重置非思考模型
     instruct_ollama_llm.set_num_ctx(DEFAULT_CONFIG["model"]["options"]["num_ctx"])
     instruct_ollama_llm.set_temperature(
         DEFAULT_CONFIG["model"]["options"]["temperature"]
     )
-
     # 重置思考模型
     thinking_ollama_llm.set_num_ctx(DEFAULT_CONFIG["model"]["options"]["num_ctx"])
     thinking_ollama_llm.set_temperature(
@@ -306,39 +319,41 @@ def reset_settings(
 
 
 with gr.Blocks(title="Ollama Chat", css=CSS) as demo:
-    # 记忆模块每个会话一个实例
+    # 记忆模块，每个会话一个实例
     memory_state: gr.State = gr.State(value=create_memory)
-
-    # 非思考模型每个会话一个实例
+    # 非思考模型，每个会话一个实例
     instruct_ollama_llm_state: gr.State = gr.State(value=create_instruct_ollama_llm)
-
-    # 思考模型每个会话一个实例
+    # 思考模型，每个会话一个实例
     thinking_ollama_llm_state: gr.State = gr.State(value=create_thinking_ollama_llm)
-
     # 介绍
     gr.HTML('<h1 align="center">Chatbot based on Ollama</h1>')
 
-    # 聊天界面设计
+    """聊天界面设计"""
     with gr.Tab("Chat"):
+        # 对话窗口
         chat_history_windows: gr.Chatbot = gr.Chatbot(type="messages", show_label=False)
-
+        # 输入框
         input_textbox: gr.Textbox = gr.Textbox(
-            label="Input Field", lines=5, max_lines=10
+            label="Input field", lines=5, max_lines=10
         )
 
         with gr.Row():
+            # 思考模式开关
             think_mode: gr.Checkbox = gr.Checkbox(label="Think")
+            # 发送按钮
             send_button: gr.Button = gr.Button(value="Send", interactive=False)
+            # 清空按钮
             clear_button: gr.Button = gr.Button(value="Clear")
 
         # 临时变量，点击发送按钮后，在清空输入框前保存输入框内容
         tmp_text: gr.Text = gr.Text(visible=False)
 
-    # 聊天功能实现
+    """聊天界面功能实现"""
+    # 输入框内不为空，则激活发送按钮
     input_textbox.change(
         fn=activate_button, inputs=[input_textbox], outputs=[send_button]
     )
-
+    # 按下发送按钮后，先清空输入框，再生成 AI 响应并更新前端界面
     send_button.click(
         fn=lambda x: ("", x),
         inputs=[input_textbox],
@@ -361,34 +376,35 @@ with gr.Blocks(title="Ollama Chat", css=CSS) as demo:
     ).then(
         fn=lambda: "", inputs=None, outputs=[tmp_text]
     )
-
+    # 按下清空按钮后，清空记忆模块的消息列表、对话窗口和输入框
     clear_button.click(
         fn=clear_chat_history,
         inputs=[memory_state],
         outputs=[chat_history_windows, memory_state],
     ).then(fn=lambda: "", inputs=None, outputs=[input_textbox])
 
-    # 设置界面设计
+    """设置界面设计"""
     with gr.Tab("Settings"):
+        # 输入系统提示词的文本框
         system_prompt_textbox: gr.Textbox = gr.Textbox(
             label="System prompt",
-            info="System prompt is a hidden instruction preset for a LLM, guiding it to generate responses that meet expectations.",
+            info="System prompt is a hidden instruction preset for a LLM, guiding it to generate responses that meet expectations",
             lines=5,
             max_lines=10,
         )
-
+        # 调整上下文窗口大小的滑块
         num_ctx_slider: gr.Slider = gr.Slider(
             label="Size of context windows",
-            info="Sets the size of the context window used to generate the next token.",
+            info="Sets the size of the context window used to generate the next token",
             value=DEFAULT_CONFIG["model"]["options"]["num_ctx"],
             minimum=2048,
             maximum=128 * 1024,
             step=512,
         )
-
+        # 调整温度大小的滑块
         temperature_slider: gr.Slider = gr.Slider(
             label="Temperature",
-            info="The temperature of the model. Increasing the temperature will make the model answer more creatively.",
+            info="The temperature of the model. Increasing the temperature will make the model answer more creatively",
             value=DEFAULT_CONFIG["model"]["options"]["temperature"],
             minimum=0.0,
             maximum=1.0,
@@ -396,10 +412,13 @@ with gr.Blocks(title="Ollama Chat", css=CSS) as demo:
         )
 
         with gr.Row():
+            # 保存按钮
             save_button: gr.Button = gr.Button(value="Save")
+            # 重置按钮
             reset_button: gr.Button = gr.Button(value="Reset")
 
-    # 设置功能实现
+    """设置界面功能实现"""
+    # 按下保存按钮后，更新记忆模块、非思考模型和思考模型
     save_button.click(
         fn=save_settings,
         inputs=[
@@ -412,7 +431,7 @@ with gr.Blocks(title="Ollama Chat", css=CSS) as demo:
         ],
         outputs=[memory_state, instruct_ollama_llm_state, thinking_ollama_llm_state],
     )
-
+    # 按下重置按钮后，重置记忆模块、非思考模型和思考模型，恢复设置界面到默认状态
     reset_button.click(
         fn=reset_settings,
         inputs=[memory_state, instruct_ollama_llm_state, thinking_ollama_llm_state],

@@ -6,7 +6,7 @@ from typing import Iterator
 class OllamaLLM:
     """Ollama LLM 模块
 
-    对 ollama 库的再次封装
+    为方便使用，再次封装 ollama 库
     """
 
     def __init__(self, client: ollama.Client) -> None:
@@ -43,7 +43,7 @@ class OllamaLLM:
         :raises ValueError: 如果 num_ctx 小于 2048
         """
         if num_ctx < 2048:
-            raise ValueError(f"[ERROR] num_ctx={num_ctx} is too small")
+            raise ValueError(f"[ERROR] The number of num_ctx={num_ctx} is too small")
 
         self._num_ctx: int = num_ctx
 
@@ -56,11 +56,11 @@ class OllamaLLM:
         :type temperature: float
         :returns: 无
         :rtype: None
-        :raises ValueError: 如果 temperature 不在温度范围内
+        :raises ValueError: 如果 temperature 不在 0.0 ~ 1.0 范围内
         """
         if temperature < 0.0 or temperature > 1.0:
             raise ValueError(
-                f"[ERROR] temperature={temperature} is not between 0.0 and 1.0"
+                f"[ERROR] The number of temperature={temperature} is not between 0.0 and 1.0"
             )
 
         self._temperature: float = temperature
@@ -76,15 +76,17 @@ class OllamaLLM:
     def chat(
         self, messages: list[dict[str, str]], think: bool
     ) -> Iterator[tuple[str, str]]:
-        """生成 AI 回复
+        """生成 AI 响应流
 
-        AI 响应流包括思考流和内容流，如果一个流不为空，则另一个流必为空
+        AI 响应流 = (思考流, 内容流)
 
-        :param messages: Ollama 格式的消息列表
+        如果一个流不为空，则另一个流必为空
+
+        :param messages: 消息列表
         :type messages: list[dict[str, str]]
         :param think: 思考模式开关
         :type think: bool
-        :return: AI 响应流元组的迭代器，元组结构：(思考流, 内容流)
+        :return: (思考流, 内容流) 的迭代器
         :rtype: Iterator[tuple[str, str]]
         """
         for part in self._client.chat(
