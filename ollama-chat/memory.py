@@ -1,3 +1,41 @@
+import re
+import math
+
+
+def conservative_token_estimate(text: str) -> int:
+    """保守估计字符串分词后所占的 token 数
+
+    在无法提取模型的分词器的情况下，用该函数保守估计 token 数
+
+    :param text: 待估计的字符串
+    :type text: str
+    :returns: 保守估计的 token 数
+    :rtype: int
+    """
+    # 中文字符数
+    chinese_chars = len(re.findall(r"[\u4e00-\u9fff\u3000-\u303f\uff00-\uffef]", text))
+    # 非中文字符数
+    non_chinese_chars = len(
+        re.findall(r"[^\u4e00-\u9fff\u3000-\u303f\uff00-\uffef]", text)
+    )
+    # 表情数
+    emoji_count = len(re.findall(r"[\U00010000-\U0010ffff]", text))
+
+    # 平均每个中文字符占 1.3 token
+    chinese_tokens = int(math.ceil(chinese_chars * 1.3))
+    # 平均每个非中文字符占 0.6 token
+    non_chinese_tokens = (
+        max(1, int(math.ceil(non_chinese_chars * 0.6))) if non_chinese_chars > 0 else 0
+    )
+    # 平均每个表情占 2 token
+    emoji_tokens = emoji_count * 2
+
+    total = chinese_tokens + non_chinese_tokens + emoji_tokens
+
+    # 额外加 5% buffer 防边界情况
+    return int(total * 1.05 + 1)
+
+
 class Memory:
     """记忆模块
 
@@ -100,15 +138,15 @@ class Memory:
         :raises ValueError: 如果 num_ctx 太小，以至于无法容纳系统提示词 + 最新用户消息
         """
         n: int = 0
-        count: int = len(self._system_message["content"])
+        tokens: int = conservative_token_estimate(self._system_message["content"])
 
         # 系统提示词字符数不能大于上下文窗口大小
-        if count > num_ctx:
+        if tokens > num_ctx:
             raise ValueError(f"[ERROR] The number of num_ctx={num_ctx} is too small")
 
         for message in reversed(self._messages):
-            count += len(message["content"])
-            if count >= num_ctx:
+            tokens += conservative_token_estimate(message["content"])
+            if tokens >= num_ctx:
                 break
             else:
                 n += 1
