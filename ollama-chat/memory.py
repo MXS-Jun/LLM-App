@@ -127,7 +127,7 @@ class Memory:
         return self._history.copy()
 
     def get_context(self, num_ctx: int) -> list[dict[str, str]]:
-        """根据上下文窗口大小，消息列表的倒数 n 条消息
+        """根据上下文窗口大小，获取消息列表的倒数 n 条消息
 
         消息列表不包括思考过程，限制 n 为奇数（多轮对话 + 最新用户消息）
 
