@@ -116,8 +116,9 @@ def get_current_time_context() -> str:
     now = datetime.datetime.now()
 
     return (
-        f"Current date and time: {now.strftime('%Y-%m-%d %H:%M:%S')} "
-        f"({now.strftime('%A')}, Week {now.strftime('%U')})."
+        f"# Time Context\n\n"
+        + f"Current date and time: {now.strftime('%Y-%m-%d %H:%M:%S')} "
+        + f"({now.strftime('%A')}, Week {now.strftime('%U')})."
     )
 
 
@@ -156,13 +157,11 @@ def chat_stream(
     context: list[dict[str, str]] = memory.get_context(
         instruct_ollama_llm.get_num_ctx()
     )
+    history.append({"role": "assistant", "content": ""})
 
     yield (history, memory, instruct_ollama_llm, thinking_ollama_llm)
 
-    history.append({"role": "assistant", "content": ""})
-
     messages: list[dict[str, str]] = [memory.get_system_message()] + context
-
     if not think:
         for _, answer_word in instruct_ollama_llm.chat(messages, False):
             history[-1]["content"] += answer_word
@@ -176,7 +175,6 @@ def chat_stream(
         yield (history, memory, instruct_ollama_llm, thinking_ollama_llm)
     else:
         thinking_process: str = ""
-
         for think_word, answer_word in thinking_ollama_llm.chat(messages, True):
             if think_word:
                 thinking_process += think_word

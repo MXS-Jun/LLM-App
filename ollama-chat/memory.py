@@ -89,13 +89,13 @@ class Memory:
         return self._history.copy()
 
     def get_context(self, num_ctx: int) -> list[dict[str, str]]:
-        """根据上下文窗口大小，获取系统消息和消息列表的倒数 n 条消息
+        """根据上下文窗口大小，消息列表的倒数 n 条消息
 
-        消息不包括思考过程，限制 n 为奇数（多轮对话 + 最新用户消息）
+        消息列表不包括思考过程，限制 n 为奇数（多轮对话 + 最新用户消息）
 
         :param num_ctx: 上下文窗口大小
         :type num_ctx: int
-        :returns: 系统消息和消息列表的倒数 n 条消息按顺序构成的列表
+        :returns: 消息列表的倒数 n 条消息按顺序构成的列表
         :rtype: list[dict[str, str]]
         :raises ValueError: 如果 num_ctx 太小，以至于无法容纳系统提示词 + 最新用户消息
         """
