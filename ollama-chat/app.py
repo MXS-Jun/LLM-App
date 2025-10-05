@@ -324,16 +324,19 @@ with gr.Blocks(title="Ollama Chat", css=CSS) as demo:
     # 思考模型，每个会话一个实例
     thinking_ollama_llm_state: gr.State = gr.State(value=create_thinking_ollama_llm)
     # 介绍
-    gr.HTML('<h1 align="center">Chatbot based on Ollama</h1>')
+    gr.HTML('<h3 align="center">Chatbot based on Ollama</h3>')
 
     """聊天界面设计"""
     with gr.Tab("Chat"):
-        # 对话窗口
-        chat_history_windows: gr.Chatbot = gr.Chatbot(type="messages", show_label=False)
-        # 输入框
-        input_textbox: gr.Textbox = gr.Textbox(
-            label="Input field", lines=5, max_lines=10
-        )
+        with gr.Group():
+            # 对话窗口
+            chat_history_windows: gr.Chatbot = gr.Chatbot(
+                type="messages", show_label=False
+            )
+            # 输入框
+            input_textbox: gr.Textbox = gr.Textbox(
+                label="Input field", lines=5, max_lines=10
+            )
 
         with gr.Row():
             # 思考模式开关
